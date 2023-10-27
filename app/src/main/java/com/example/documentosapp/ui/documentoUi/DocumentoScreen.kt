@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -19,10 +22,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.documentosapp.data.remote.dto.DocumentoDto
 import com.example.documentosapp.ui.documentoUi.DocumentoViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocumentoScreen(documentoViewModel: DocumentoViewModel) {
-
     val uiState by documentoViewModel.uiState.collectAsStateWithLifecycle()
     when {
         uiState.isLoading -> {
@@ -39,19 +40,39 @@ fun DocumentoScreen(documentoViewModel: DocumentoViewModel) {
 
 @Composable
 fun DocumentoDetails(documentoList: List<DocumentoDto>) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         items(documentoList) { documento ->
-            Row(
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(8.dp),
+                shape = RoundedCornerShape(corner = CornerSize(16.dp)),
+                elevation = CardDefaults.elevatedCardElevation()
             ) {
-                Text("${documento.Numero} ", style = MaterialTheme.typography.bodyMedium)
-                Text("${documento.Rnc} ", style = MaterialTheme.typography.bodyMedium)
-                Text("${documento.NombreCliente} ", style = MaterialTheme.typography.bodyMedium)
-                Text("${documento.Precio} ", style = MaterialTheme.typography.bodyMedium)
-                Text("${documento.Monto}", style = MaterialTheme.typography.bodyMedium)
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(
+                            text = "Documento #${documento.Numero}",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("RNC: ${documento.Rnc}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Cliente: ${documento.NombreCliente}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Precio: ${documento.Precio}", style = MaterialTheme.typography.bodyMedium)
+                    Text("Monto: ${documento.Monto}", style = MaterialTheme.typography.bodyMedium)
+                }
             }
-            Divider(color = Color.Gray, thickness = 1.dp)
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
