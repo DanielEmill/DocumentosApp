@@ -1,4 +1,6 @@
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,22 +24,39 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.documentosapp.data.remote.dto.DocumentoDto
 import com.example.documentosapp.ui.documentoUi.DocumentoViewModel
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocumentoScreen(documentoViewModel: DocumentoViewModel) {
     val uiState by documentoViewModel.uiState.collectAsStateWithLifecycle()
-    when {
-        uiState.isLoading -> {
-            CircularProgressIndicator()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Documentos API") }
+            )
         }
-        uiState.error != null -> {
-            Text("Error: ${uiState.error}")
-        }
-        uiState.documentos != null -> {
-            DocumentoDetails(documentoList = uiState.documentos)
+    ) { padding ->
+        when {
+            uiState.isLoading -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            uiState.error != null -> {
+                Text("Error: ${uiState.error}")
+            }
+            uiState.documentos != null -> {
+                Column {
+                    Spacer(modifier = Modifier.height(padding.calculateTopPadding()))
+                    DocumentoDetails(documentoList = uiState.documentos)
+                }
+            }
         }
     }
 }
-
 @Composable
 fun DocumentoDetails(documentoList: List<DocumentoDto>) {
     LazyColumn(
